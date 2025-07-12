@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    restart: unless-stopped
+    environment:
+      - MEILI_MASTER_KEY=pkucc_crimson_data
+    ports:
+      - "7700:7700"        # 方便在宿主机调试
+    volumes:
+      - /home/zyx/projects/crimson/meili_data:/meili_data
+
+  cve_search:
+    build: .               # 用你的 Dockerfile
+    container_name: cve_search
+    environment:
+      MEILISEARCH_HOST: http://meilisearch:7700   # 推荐改成环境变量
+      MEILISEARCH_API_KEY: pkucc_crimson_data
+    depends_on:
+      - meilisearch
+    ports:
+      - "8000:8000"

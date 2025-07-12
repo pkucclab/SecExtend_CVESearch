@@ -219,7 +219,7 @@ wheels = [
 ]
 
 [[package]]
-name = "secextend"
+name = "secextend-fscan"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

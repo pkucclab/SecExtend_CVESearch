@@ -1,4 +1,4 @@
-# SecExtend Fscan
+# SecExtend CVESearch
 Fscan component of the SecExtend project
 
 # Quick Start
@@ -6,10 +6,9 @@ Fscan component of the SecExtend project
 First, build the image and start the container
 
 ```shell
-git clone https://github.com/pkucclab/SecExtend_Fscan.git
-cd SecExtend_Fscan
-docker -t secextend_fscan .
-docker run -p 8000:8000 secextend_fscan
+git clone https://github.com/pkucclab/SecExtend_CVESearch.git
+cd SecExtend_CVESearch
+docker compose up -d
 ```
 
 Then configure the configuration file of the MCP server, as shown below
@@ -17,7 +16,7 @@ Then configure the configuration file of the MCP server, as shown below
 ```json
 {
   "mcpServers": {
-    "SecExtend_Fscan": {
+    "SecExtend_CVESearch": {
       "url": "http://127.0.0.1:8000/sse",
       "disabled": false,
       "autoApprove": [],
