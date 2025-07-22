@@ -224,47 +224,177 @@ class CVEAddTool:
         JsonSchema，用于参数校验
         """
         return {
-            "type": "object",
-            "properties": {
-                "cve_data_items": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "cve_id": {
-                                "type": "string",
-                                "pattern": "^CVE-[0-9]{4}-[0-9]+$"
+        "type": "object",
+        "properties": {
+            "cve_data_items": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        # -------- 基本字段 --------
+                        "cve_id": {
+                            "type": "string",
+                            "pattern": "^CVE-[0-9]{4}-[0-9]+$"
+                        },
+                        "description": {"type": "string"},
+                        "cvss_version": {"type": "string"},
+                        "cvss_severity": {"type": "string"},
+                        "cvss_base_score": {"type": "number"},
+                        "year": {
+                            "type": "string",
+                            "pattern": "^[0-9]{4}$"
+                        },
+
+                        # -------- 主体映射信息 --------
+                        "cve_mapping": {
+                            "type": "object",
+                            "properties": {
+                                "explaination": {"type": "string"},
+                                "exploit_techniques": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id":   {"type": "string"},
+                                            "name": {"type": "string"}
+                                        },
+                                        "required": ["id", "name"],
+                                        "additionalProperties": False
+                                    }
+                                },
+
+                                # ---- functionality 可为 null 或对象 ----
+                                "functionality": {
+                                    "anyOf": [
+                                        {"type": "null"},
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "gained_functionality": {
+                                                    "type": "array",
+                                                    "items": {"type": "string"}
+                                                },
+                                                "primary_impact": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id":   {"type": "string"},
+                                                            "name": {"type": "string"}
+                                                        },
+                                                        "required": ["id", "name"],
+                                                        "additionalProperties": False
+                                                    }
+                                                },
+                                                "secondary_impact": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id":   {"type": "string"},
+                                                            "name": {"type": "string"}
+                                                        },
+                                                        "required": ["id", "name"],
+                                                        "additionalProperties": False
+                                                    }
+                                                }
+                                            },
+                                            "additionalProperties": False
+                                        }
+                                    ]
+                                },
+
+                                "vulnerability_type": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {"type": "string"},
+                                        "exploitation_techniques": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id":   {"type": "string"},
+                                                    "name": {"type": "string"}
+                                                },
+                                                "required": ["id", "name"],
+                                                "additionalProperties": False
+                                            }
+                                        },
+                                        "primary_impact": {
+                                            "type": "array",
+                                            "items": {"type": "string"}
+                                        },
+                                        "secondary_impact": {
+                                            "type": "array",
+                                            "items": {"type": "string"}
+                                        }
+                                    },
+                                    "required": ["type"],
+                                    "additionalProperties": False
+                                }
                             },
-                            "cve_mapping": {"type": "object"},
-                            "description": {"type": "string"},
-                            "cvss_version": {"type": "string"},
-                            "cvss_severity": {"type": "string"},
-                            "cvss_base_score": {"type": "number"},
-                            "year": {"type": "string"},
-                            "related_attcks": {
-                                "type": "array",
-                                "items": {"type": "object"}
-                            },
-                            "gt_attcks": {
-                                "type": "array",
-                                "items": {"type": "object"}
-                            },
-                            "attck_patterns": {
-                                "type": "array",
-                                "items": {"type": "object"}
+                            "required": ["explaination", "vulnerability_type"],
+                            "additionalProperties": False
+                        },
+
+                        # -------- ATT&CK 相关列表 --------
+                        "related_attcks": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id":   {"type": "string"},
+                                    "name": {"type": "string"}
+                                },
+                                "required": ["id", "name"],
+                                "additionalProperties": False
                             }
                         },
-                        "required": ["cve_id", "cve_mapping", 
-                                     "description", 
-                                     "cvss_version", 
-                                     "cvss_severity", 
-                                     "cvss_base_score", 
-                                     "year"]
-                    }
+                        "gt_attcks": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id":   {"type": "string"},
+                                    "name": {"type": "string"}
+                                },
+                                "required": ["id", "name"],
+                                "additionalProperties": False
+                            }
+                        },
+                        "attck_patterns": {
+                            "type": "array",
+                            "items": {"type": "object"}
+                        },
+                        "related_attck_patterns": {
+                            "type": "array",
+                            "items": {"type": "object"}
+                        },
+
+                        # -------- 统计字段 --------
+                        "count_attck_patterns": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "count_related_attck_patterns": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+
+                    # 必填字段
+                    "required": [
+                        "cve_id",
+                        "description",
+                        "cve_mapping"
+                    ],
+                    "additionalProperties": False
                 }
-            },
-            "required": ["cve_data_items"]
-        }
+            }
+        },
+        "required": ["cve_data_items"],
+        "additionalProperties": False
+    }
 
      # ----------------------------- 执行写入 -----------------------------
     async def execute(self, params: Dict) -> List[TextContent]:
